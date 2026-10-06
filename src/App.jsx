@@ -29,7 +29,7 @@ const App = () => {
     const [department, setDepartment] = useState("All teams");
     const [location, setLocation] = useState("All locations");
     const [dialogShift, setDialogShift] = useState(null);
-    const [toast, setToast] = useState("");
+    const [toast, setToast] = useState(null);
 
     const weekStart = useMemo(
         () => addDays(baseWeekStart, weekOffset * 7),
@@ -94,9 +94,14 @@ const App = () => {
 
     useEffect(() => {
         if (!toast) return undefined;
-        const timeout = window.setTimeout(() => setToast(""), 3000);
+        const timeout = window.setTimeout(
+            () => setToast(null),
+            toast.type === "error" ? 5000 : 3000,
+        );
         return () => window.clearTimeout(timeout);
     }, [toast]);
+
+    const showToast = (message, type = "success") => setToast({ message, type });
 
     const addShift = (employee, day) => {
         const selectedEmployee = employee || visibleEmployees[0] || employees[0];
@@ -120,7 +125,17 @@ const App = () => {
         );
 
         if (sameDayShift) {
-            setToast("Each team member can have one shift per day.");
+            const employeeName = employees.find(
+                (employee) => employee.id === form.employeeId,
+            )?.name || "This team member";
+            const shiftDate = new Date(`${form.date}T12:00:00`).toLocaleDateString(
+                undefined,
+                { weekday: "long", month: "short", day: "numeric" },
+            );
+            showToast(
+                `${employeeName} already has a shift on ${shiftDate}. Choose a different day or team member.`,
+                "error",
+            );
             return;
         }
 
@@ -134,7 +149,7 @@ const App = () => {
         );
 
         if (conflict) {
-            setToast("That team member already has a shift during those hours.");
+            showToast("That time overlaps with another shift for this team member.", "error");
             return;
         }
 
@@ -150,13 +165,13 @@ const App = () => {
                 : [...current, savedShift],
         );
         setDialogShift(null);
-        setToast(form.id ? "Shift changes saved." : "Shift added to the roster.");
+        showToast(form.id ? "Shift changes saved." : "Shift added to the roster.");
     };
 
     const deleteShift = (shiftId) => {
         setShifts((current) => current.filter((shift) => shift.id !== shiftId));
         setDialogShift(null);
-        setToast("Shift removed from the roster.");
+        showToast("Shift removed from the roster.");
     };
 
     const copyPreviousWeek = () => {
@@ -169,7 +184,7 @@ const App = () => {
         );
 
         if (!previousShifts.length) {
-            setToast("There are no shifts in the previous week to copy.");
+            showToast("There are no shifts in the previous week to copy.", "warning");
             return;
         }
 
@@ -185,12 +200,12 @@ const App = () => {
             .filter((shift) => !currentCells.has(`${shift.employeeId}-${shift.date}`));
 
         if (!copiedShifts.length) {
-            setToast("This week already has shifts in all of those slots.");
+            showToast("This week already has shifts in all of those slots.", "warning");
             return;
         }
 
         setShifts((current) => [...current, ...copiedShifts]);
-        setToast(`${copiedShifts.length} shifts copied into open cells.`);
+        showToast(`${copiedShifts.length} shifts copied into open cells.`);
     };
 
     return (
@@ -243,7 +258,13 @@ const App = () => {
                     onDelete={deleteShift}
                 />
             )}
-            {toast && <Toast message={toast} onDismiss={() => setToast("")} />}
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onDismiss={() => setToast(null)}
+                />
+            )}
         </div>
     );
 };

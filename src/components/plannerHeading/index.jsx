@@ -4,7 +4,6 @@ import {
     FiChevronLeft,
     FiChevronRight,
     FiClock,
-    FiCopy,
     FiPlus,
     FiSearch,
     FiUsers,
@@ -22,7 +21,6 @@ const PlannerHeading = ({
     onPreviousWeek,
     onNextWeek,
     onCurrentWeek,
-    onDuplicatePrevious,
     onAddShift,
     search,
     onSearchChange,
@@ -162,15 +160,6 @@ const PlannerHeading = ({
                     </select>
                     <FiChevronDown aria-hidden="true" />
                 </label>
-                <button
-                    className={styles["copy-button"]}
-                    type="button"
-                    onClick={onDuplicatePrevious}
-                    title="Copy shifts from the previous week"
-                >
-                    <FiCopy aria-hidden="true" />
-                    <span>Copy last week</span>
-                </button>
                 <button
                     className={styles["add-button"]}
                     type="button"

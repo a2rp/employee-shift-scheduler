@@ -372,7 +372,6 @@
         }
     }
 
-    .copy-button,
     .add-button {
         min-height: 41px;
         display: inline-flex;
@@ -543,8 +542,7 @@
             flex: 1 1 130px;
         }
 
-        .copy-button,
-        .add-button {
+    .add-button {
             flex: 1 1 130px;
         }
     }

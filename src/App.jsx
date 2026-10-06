@@ -1,0 +1,229 @@
+import { useEffect, useMemo, useState } from "react";
+import Header from "./components/header/index.jsx";
+import PlannerHeading from "./components/plannerHeading/index.jsx";
+import ShiftGrid from "./components/shiftGrid/index.jsx";
+import CoveragePanel from "./components/coveragePanel/index.jsx";
+import TeamPanel from "./components/teamPanel/index.jsx";
+import ShiftDialog from "./components/shiftDialog/index.jsx";
+import Footer from "./components/footer/index.jsx";
+import Toast from "./components/toast/index.jsx";
+import { createStarterShifts, employees } from "./data/roster.js";
+import {
+    addDays,
+    formatWeekRange,
+    getDateKey,
+    getShiftHours,
+    getWeekDays,
+    getWeekStart,
+} from "./utils/dates.js";
+import { readSchedule, saveSchedule } from "./utils/scheduleStorage.js";
+import styles from "./App.module.css";
+
+const App = () => {
+    const [baseWeekStart] = useState(() => getWeekStart(new Date()));
+    const [weekOffset, setWeekOffset] = useState(0);
+    const [shifts, setShifts] = useState(() =>
+        readSchedule(createStarterShifts(getWeekStart(new Date()))),
+    );
+    const [search, setSearch] = useState("");
+    const [department, setDepartment] = useState("All teams");
+    const [location, setLocation] = useState("All locations");
+    const [dialogShift, setDialogShift] = useState(null);
+    const [toast, setToast] = useState("");
+
+    const weekStart = useMemo(
+        () => addDays(baseWeekStart, weekOffset * 7),
+        [baseWeekStart, weekOffset],
+    );
+    const weekDays = useMemo(() => getWeekDays(weekStart), [weekStart]);
+    const weekStartKey = getDateKey(weekDays[0]);
+    const weekEndKey = getDateKey(weekDays[weekDays.length - 1]);
+    const weekShifts = useMemo(
+        () => shifts.filter((shift) => shift.date >= weekStartKey && shift.date <= weekEndKey),
+        [shifts, weekStartKey, weekEndKey],
+    );
+    const visibleEmployees = useMemo(() => {
+        const query = search.trim().toLowerCase();
+        return employees.filter((employee) => {
+            const matchesQuery =
+                !query ||
+                [employee.name, employee.role, employee.department, employee.location]
+                    .join(" ")
+                    .toLowerCase()
+                    .includes(query);
+            const matchesDepartment =
+                department === "All teams" || employee.department === department;
+            const matchesLocation =
+                location === "All locations" || employee.location === location;
+
+            return matchesQuery && matchesDepartment && matchesLocation;
+        });
+    }, [department, location, search]);
+    const visibleEmployeeIds = useMemo(
+        () => new Set(visibleEmployees.map((employee) => employee.id)),
+        [visibleEmployees],
+    );
+    const visibleShifts = useMemo(
+        () => weekShifts.filter((shift) => visibleEmployeeIds.has(shift.employeeId)),
+        [visibleEmployeeIds, weekShifts],
+    );
+    const scheduledHours = weekShifts.reduce(
+        (total, shift) => total + getShiftHours(shift),
+        0,
+    );
+    const openSlots = weekDays.reduce((total, day) => {
+        const assigned = weekShifts.filter((shift) => shift.date === getDateKey(day)).length;
+        return total + Math.max(0, 6 - assigned);
+    }, 0);
+    const teamCount = new Set(weekShifts.map((shift) => shift.employeeId)).size;
+    const isCurrentWeek = weekOffset === 0;
+
+    useEffect(() => {
+        saveSchedule(shifts);
+    }, [shifts]);
+
+    useEffect(() => {
+        if (!toast) return undefined;
+        const timeout = window.setTimeout(() => setToast(""), 3000);
+        return () => window.clearTimeout(timeout);
+    }, [toast]);
+
+    const addShift = (employee, day) => {
+        const selectedEmployee = employee || visibleEmployees[0] || employees[0];
+        setDialogShift({
+            employeeId: selectedEmployee.id,
+            date: getDateKey(day || weekDays[0]),
+            start: "09:00",
+            end: "17:00",
+            breakMinutes: 30,
+            role: selectedEmployee.role,
+            location: selectedEmployee.location,
+        });
+    };
+
+    const saveShift = (form) => {
+        const conflict = shifts.some(
+            (shift) =>
+                shift.id !== form.id &&
+                shift.employeeId === form.employeeId &&
+                shift.date === form.date &&
+                form.start < shift.end &&
+                shift.start < form.end,
+        );
+
+        if (conflict) {
+            setToast("That team member already has a shift during those hours.");
+            return;
+        }
+
+        const savedShift = {
+            ...form,
+            id: form.id || `shift-${Date.now()}`,
+            role: form.role || employees.find((person) => person.id === form.employeeId)?.role || "Team member",
+        };
+
+        setShifts((current) =>
+            form.id
+                ? current.map((shift) => (shift.id === form.id ? savedShift : shift))
+                : [...current, savedShift],
+        );
+        setDialogShift(null);
+        setToast(form.id ? "Shift changes saved." : "Shift added to the roster.");
+    };
+
+    const deleteShift = (shiftId) => {
+        setShifts((current) => current.filter((shift) => shift.id !== shiftId));
+        setDialogShift(null);
+        setToast("Shift removed from the roster.");
+    };
+
+    const copyPreviousWeek = () => {
+        const previousStart = addDays(weekStart, -7);
+        const previousDays = getWeekDays(previousStart);
+        const previousStartKey = getDateKey(previousDays[0]);
+        const previousEndKey = getDateKey(previousDays[6]);
+        const previousShifts = shifts.filter(
+            (shift) => shift.date >= previousStartKey && shift.date <= previousEndKey,
+        );
+
+        if (!previousShifts.length) {
+            setToast("There are no shifts in the previous week to copy.");
+            return;
+        }
+
+        const currentCells = new Set(
+            weekShifts.map((shift) => `${shift.employeeId}-${shift.date}`),
+        );
+        const copiedShifts = previousShifts
+            .map((shift, index) => ({
+                ...shift,
+                id: `copy-${Date.now()}-${index}`,
+                date: getDateKey(addDays(new Date(`${shift.date}T12:00:00`), 7)),
+            }))
+            .filter((shift) => !currentCells.has(`${shift.employeeId}-${shift.date}`));
+
+        if (!copiedShifts.length) {
+            setToast("This week already has shifts in all of those slots.");
+            return;
+        }
+
+        setShifts((current) => [...current, ...copiedShifts]);
+        setToast(`${copiedShifts.length} shifts copied into open cells.`);
+    };
+
+    return (
+        <div className={styles["app-shell"]}>
+            <a className={styles["skip-link"]} href="#schedule">Skip to the roster</a>
+            <Header />
+            <main className={styles["page-content"]}>
+                <PlannerHeading
+                    weekRange={formatWeekRange(weekDays)}
+                    isCurrentWeek={isCurrentWeek}
+                    shiftCount={weekShifts.length}
+                    scheduledHours={scheduledHours}
+                    openSlots={openSlots}
+                    teamCount={teamCount}
+                    onPreviousWeek={() => setWeekOffset((offset) => offset - 1)}
+                    onNextWeek={() => setWeekOffset((offset) => offset + 1)}
+                    onCurrentWeek={() => setWeekOffset(0)}
+                    onDuplicatePrevious={copyPreviousWeek}
+                    onAddShift={() => addShift(null, weekDays[0])}
+                    search={search}
+                    onSearchChange={setSearch}
+                    department={department}
+                    onDepartmentChange={setDepartment}
+                    location={location}
+                    onLocationChange={setLocation}
+                />
+
+                <ShiftGrid
+                    employees={visibleEmployees}
+                    weekDays={weekDays}
+                    shifts={visibleShifts}
+                    onAddShift={addShift}
+                    onEditShift={setDialogShift}
+                />
+
+                <div className={styles["insight-grid"]}>
+                    <CoveragePanel weekDays={weekDays} shifts={weekShifts} />
+                    <TeamPanel employees={employees} shifts={weekShifts} />
+                </div>
+
+                <Footer />
+            </main>
+
+            {dialogShift && (
+                <ShiftDialog
+                    employees={employees}
+                    shift={dialogShift}
+                    onClose={() => setDialogShift(null)}
+                    onSave={saveShift}
+                    onDelete={deleteShift}
+                />
+            )}
+            {toast && <Toast message={toast} onDismiss={() => setToast("")} />}
+        </div>
+    );
+};
+
+export default App;

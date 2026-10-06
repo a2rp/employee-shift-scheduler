@@ -1,0 +1,143 @@
+import { addDays, getDateKey } from "../utils/dates.js";
+
+export const employees = [
+    {
+        id: "maya-chen",
+        name: "Maya Chen",
+        role: "Store lead",
+        department: "Operations",
+        location: "Harbor House",
+        targetHours: 38,
+        initials: "MC",
+        tone: "coral",
+    },
+    {
+        id: "luis-ortega",
+        name: "Luis Ortega",
+        role: "Floor associate",
+        department: "Service",
+        location: "Harbor House",
+        targetHours: 32,
+        initials: "LO",
+        tone: "blue",
+    },
+    {
+        id: "nora-patel",
+        name: "Nora Patel",
+        role: "Barista",
+        department: "Cafe",
+        location: "Harbor House",
+        targetHours: 30,
+        initials: "NP",
+        tone: "gold",
+    },
+    {
+        id: "benji-kim",
+        name: "Benji Kim",
+        role: "Stock associate",
+        department: "Operations",
+        location: "Harbor House",
+        targetHours: 28,
+        initials: "BK",
+        tone: "mint",
+    },
+    {
+        id: "ava-morgan",
+        name: "Ava Morgan",
+        role: "Service lead",
+        department: "Service",
+        location: "Market Hall",
+        targetHours: 36,
+        initials: "AM",
+        tone: "plum",
+    },
+    {
+        id: "eli-brooks",
+        name: "Eli Brooks",
+        role: "Barista",
+        department: "Cafe",
+        location: "Market Hall",
+        targetHours: 30,
+        initials: "EB",
+        tone: "blue",
+    },
+    {
+        id: "theo-williams",
+        name: "Theo Williams",
+        role: "Merchandising",
+        department: "Floor",
+        location: "Market Hall",
+        targetHours: 32,
+        initials: "TW",
+        tone: "mint",
+    },
+    {
+        id: "iris-okafor",
+        name: "Iris Okafor",
+        role: "Shift lead",
+        department: "Service",
+        location: "Market Hall",
+        targetHours: 36,
+        initials: "IO",
+        tone: "coral",
+    },
+];
+
+export const departments = ["All teams", "Service", "Cafe", "Operations", "Floor"];
+export const locations = ["All locations", "Harbor House", "Market Hall"];
+
+const weeklyPattern = [
+    ["maya-chen", 0, "07:00", "15:00", 30],
+    ["luis-ortega", 0, "10:00", "18:00", 30],
+    ["nora-patel", 0, "08:00", "14:00", 0],
+    ["ava-morgan", 0, "09:00", "17:00", 30],
+    ["eli-brooks", 0, "08:00", "14:00", 0],
+    ["iris-okafor", 0, "14:00", "22:00", 30],
+    ["maya-chen", 1, "07:00", "15:00", 30],
+    ["luis-ortega", 1, "10:00", "18:00", 30],
+    ["benji-kim", 1, "07:00", "13:00", 0],
+    ["ava-morgan", 1, "11:00", "19:00", 30],
+    ["theo-williams", 1, "08:00", "16:00", 30],
+    ["maya-chen", 2, "10:00", "18:00", 30],
+    ["nora-patel", 2, "08:00", "14:00", 0],
+    ["benji-kim", 2, "07:00", "13:00", 0],
+    ["eli-brooks", 2, "08:00", "14:00", 0],
+    ["iris-okafor", 2, "14:00", "22:00", 30],
+    ["luis-ortega", 3, "10:00", "18:00", 30],
+    ["nora-patel", 3, "08:00", "14:00", 0],
+    ["benji-kim", 3, "07:00", "13:00", 0],
+    ["theo-williams", 3, "08:00", "16:00", 30],
+    ["iris-okafor", 3, "12:00", "20:00", 30],
+    ["maya-chen", 4, "08:00", "16:00", 30],
+    ["luis-ortega", 4, "12:00", "20:00", 30],
+    ["benji-kim", 4, "07:00", "13:00", 0],
+    ["ava-morgan", 4, "13:00", "21:00", 30],
+    ["eli-brooks", 4, "08:00", "14:00", 0],
+    ["maya-chen", 5, "08:00", "16:00", 30],
+    ["nora-patel", 5, "08:00", "14:00", 0],
+    ["ava-morgan", 5, "14:00", "22:00", 30],
+    ["eli-brooks", 5, "10:00", "16:00", 0],
+    ["iris-okafor", 5, "16:00", "22:00", 0],
+    ["luis-ortega", 6, "10:00", "16:00", 0],
+    ["nora-patel", 6, "09:00", "14:00", 0],
+    ["ava-morgan", 6, "10:00", "18:00", 30],
+    ["theo-williams", 6, "08:00", "16:00", 30],
+    ["iris-okafor", 6, "12:00", "18:00", 0],
+];
+
+export const createStarterShifts = (weekStart) =>
+    weeklyPattern.map(([employeeId, day, start, end, breakMinutes], index) => {
+        const employee = employees.find((person) => person.id === employeeId);
+        const date = getDateKey(addDays(weekStart, day));
+
+        return {
+            id: `starter-${date}-${index}`,
+            employeeId,
+            date,
+            start,
+            end,
+            breakMinutes,
+            role: employee.role,
+            location: employee.location,
+        };
+    });

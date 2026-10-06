@@ -1,0 +1,70 @@
+.app-shell {
+    min-height: 100vh;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    .skip-link {
+        position: fixed;
+        z-index: 80;
+        top: 8px;
+        left: 8px;
+        padding: 8px 12px;
+        border: 1px solid var(--color-coral);
+        border-radius: 6px;
+        background: var(--color-surface);
+        color: var(--color-navy);
+        font-size: 12px;
+        font-weight: 700;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+
+        &:focus {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
+
+    .page-content {
+        width: min(calc(100% - 56px), 1480px);
+        margin: 0 auto;
+        padding: 107px 0 24px;
+    }
+
+    .insight-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(350px, 0.9fr);
+        align-items: start;
+        gap: 18px;
+        padding-top: 22px;
+        scroll-margin-top: 95px;
+    }
+
+    @media (max-width: 1050px) {
+        .page-content {
+            width: min(calc(100% - 38px), 1480px);
+        }
+
+        .insight-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    @media (max-width: 650px) {
+        .page-content {
+            width: calc(100% - 26px);
+            padding-top: 89px;
+        }
+
+        .insight-grid {
+            gap: 13px;
+            padding-top: 16px;
+            scroll-margin-top: 78px;
+        }
+    }
+}

@@ -1,0 +1,55 @@
+.toast {
+    position: fixed;
+    z-index: 60;
+    right: 22px;
+    bottom: 22px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 9px 7px 13px;
+    border: 1px solid #cbded4;
+    border-radius: 8px;
+    background: #f5fbf7;
+    box-shadow: 0 9px 28px rgba(16, 40, 59, 0.15);
+    color: #436d5d;
+    font-size: 12px;
+    font-weight: 650;
+
+    > svg {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 auto;
+    }
+
+    button {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        margin-left: 3px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: transparent;
+        color: #678276;
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease;
+
+        &:hover {
+            border-color: #cbded4;
+            box-shadow: 0 2px 7px rgba(24, 52, 73, 0.08);
+        }
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    @media (max-width: 520px) {
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
+    }
+}

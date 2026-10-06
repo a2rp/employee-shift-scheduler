@@ -1,0 +1,232 @@
+.coverage-panel {
+    scroll-margin-top: 100px;
+    padding: 25px 27px 20px;
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+
+    .panel-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 22px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--color-line);
+
+        h2 {
+            margin-top: 5px;
+            color: var(--color-navy-deep);
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.6px;
+        }
+
+        p {
+            margin-top: 5px;
+            color: var(--color-ink-soft);
+            font-size: 12px;
+        }
+    }
+
+    .section-index {
+        color: var(--color-coral);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1.05px;
+    }
+
+    .coverage-summary {
+        min-width: 155px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 11px;
+        border: 1px solid #f0d6ca;
+        border-radius: 7px;
+        background: #fbf0e9;
+        color: var(--color-coral);
+
+        > svg {
+            width: 17px;
+            height: 17px;
+            flex: 0 0 auto;
+        }
+
+        > span {
+            display: grid;
+
+            strong {
+                color: var(--color-navy);
+                font-size: 11px;
+                font-weight: 750;
+            }
+
+            small {
+                color: var(--color-ink-faint);
+                font-size: 9px;
+            }
+        }
+    }
+
+    .coverage-list {
+        display: grid;
+        padding: 8px 0;
+    }
+
+    .coverage-row {
+        min-height: 47px;
+        display: grid;
+        grid-template-columns: 104px minmax(120px, 1fr) 86px;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid #eeeee9;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    .coverage-date {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+
+        strong {
+            color: var(--color-navy);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        span {
+            color: var(--color-ink-faint);
+            font-size: 10px;
+        }
+    }
+
+    .coverage-track {
+        height: 7px;
+        overflow: hidden;
+        border-radius: 10px;
+        background: #ebece6;
+
+        span {
+            height: 100%;
+            display: block;
+            border-radius: inherit;
+            background: var(--color-mint);
+        }
+    }
+
+    .coverage-count {
+        display: grid;
+        justify-items: end;
+        line-height: 1.25;
+
+        strong {
+            color: var(--color-navy);
+            font-size: 11px;
+            font-weight: 750;
+
+            span {
+                color: var(--color-ink-faint);
+                font-weight: 500;
+            }
+        }
+
+        small {
+            color: var(--color-coral);
+            font-size: 9px;
+        }
+
+        .covered-label {
+            color: #5c8978;
+        }
+    }
+
+    .coverage-note {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding-top: 14px;
+        border-top: 1px solid var(--color-line);
+    }
+
+    .note-photo {
+        width: 57px;
+        height: 43px;
+        display: block;
+        flex: 0 0 auto;
+        overflow: hidden;
+        border: 1px solid var(--color-line);
+        border-radius: 6px;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .coverage-note > span:nth-child(2) {
+        display: grid;
+        line-height: 1.25;
+
+        strong {
+            color: var(--color-navy);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        small {
+            color: var(--color-ink-faint);
+            font-size: 9px;
+        }
+    }
+
+    .note-right {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-left: auto;
+        color: var(--color-ink-faint);
+        font-size: 9px;
+
+        svg {
+            width: 13px;
+            height: 13px;
+        }
+    }
+
+    @media (max-width: 800px) {
+        padding: 21px 17px 16px;
+
+        .panel-heading {
+            flex-direction: column;
+        }
+
+        .coverage-summary {
+            width: 100%;
+        }
+
+        .note-right {
+            display: none;
+        }
+    }
+
+    @media (max-width: 470px) {
+        .coverage-row {
+            grid-template-columns: 90px minmax(60px, 1fr) 64px;
+            gap: 8px;
+        }
+
+        .coverage-date {
+            display: grid;
+            gap: 0;
+        }
+
+        .coverage-date span {
+            font-size: 9px;
+        }
+    }
+}

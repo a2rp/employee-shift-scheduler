@@ -11,7 +11,6 @@ Shiftline is a weekly workforce planner for assigning employee shifts and keepin
 - Review a seven-day employee roster with local dates and shift hours.
 - Add, edit, and remove shifts for a team member and location.
 - Prevent overlapping shifts for the same employee.
-- Copy the previous week's shifts into open employee and day slots.
 - Search by employee, role, team, or location.
 - Filter the roster by department and work location.
 - Track daily coverage gaps and compare weekly hours with each employee's target.

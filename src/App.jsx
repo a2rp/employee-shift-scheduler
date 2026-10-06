@@ -174,40 +174,6 @@ const App = () => {
         showToast("Shift removed from the roster.");
     };
 
-    const copyPreviousWeek = () => {
-        const previousStart = addDays(weekStart, -7);
-        const previousDays = getWeekDays(previousStart);
-        const previousStartKey = getDateKey(previousDays[0]);
-        const previousEndKey = getDateKey(previousDays[6]);
-        const previousShifts = shifts.filter(
-            (shift) => shift.date >= previousStartKey && shift.date <= previousEndKey,
-        );
-
-        if (!previousShifts.length) {
-            showToast("There are no shifts in the previous week to copy.", "warning");
-            return;
-        }
-
-        const currentCells = new Set(
-            weekShifts.map((shift) => `${shift.employeeId}-${shift.date}`),
-        );
-        const copiedShifts = previousShifts
-            .map((shift, index) => ({
-                ...shift,
-                id: `copy-${Date.now()}-${index}`,
-                date: getDateKey(addDays(new Date(`${shift.date}T12:00:00`), 7)),
-            }))
-            .filter((shift) => !currentCells.has(`${shift.employeeId}-${shift.date}`));
-
-        if (!copiedShifts.length) {
-            showToast("This week already has shifts in all of those slots.", "warning");
-            return;
-        }
-
-        setShifts((current) => [...current, ...copiedShifts]);
-        showToast(`${copiedShifts.length} shifts copied into open cells.`);
-    };
-
     return (
         <div className={styles["app-shell"]}>
             <a className={styles["skip-link"]} href="#schedule">Skip to the roster</a>
@@ -223,7 +189,6 @@ const App = () => {
                     onPreviousWeek={() => setWeekOffset((offset) => offset - 1)}
                     onNextWeek={() => setWeekOffset((offset) => offset + 1)}
                     onCurrentWeek={() => setWeekOffset(0)}
-                    onDuplicatePrevious={copyPreviousWeek}
                     onAddShift={() => addShift(null, weekDays[0])}
                     search={search}
                     onSearchChange={setSearch}

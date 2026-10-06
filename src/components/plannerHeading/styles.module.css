@@ -332,9 +332,30 @@
     .select-control {
         position: relative;
         min-width: 146px;
+        display: block;
+        padding: 0;
+
+        > svg:first-child,
+        > svg:last-child {
+            position: absolute;
+            top: 50%;
+            z-index: 1;
+            pointer-events: none;
+            transform: translateY(-50%);
+        }
+
+        > svg:first-child {
+            left: 11px;
+        }
+
+        > svg:last-child {
+            right: 11px;
+        }
 
         select {
             width: 100%;
+            height: 39px;
+            padding: 0 31px 0 34px;
             appearance: none;
             border: 0;
             outline: 0;

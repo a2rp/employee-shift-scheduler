@@ -54,18 +54,28 @@ const App = () => {
             const matchesDepartment =
                 department === "All teams" || employee.department === department;
             const matchesLocation =
-                location === "All locations" || employee.location === location;
+                location === "All locations" ||
+                employee.location === location ||
+                weekShifts.some(
+                    (shift) =>
+                        shift.employeeId === employee.id && shift.location === location,
+                );
 
             return matchesQuery && matchesDepartment && matchesLocation;
         });
-    }, [department, location, search]);
+    }, [department, location, search, weekShifts]);
     const visibleEmployeeIds = useMemo(
         () => new Set(visibleEmployees.map((employee) => employee.id)),
         [visibleEmployees],
     );
     const visibleShifts = useMemo(
-        () => weekShifts.filter((shift) => visibleEmployeeIds.has(shift.employeeId)),
-        [visibleEmployeeIds, weekShifts],
+        () =>
+            weekShifts.filter(
+                (shift) =>
+                    visibleEmployeeIds.has(shift.employeeId) &&
+                    (location === "All locations" || shift.location === location),
+            ),
+        [location, visibleEmployeeIds, weekShifts],
     );
     const scheduledHours = weekShifts.reduce(
         (total, shift) => total + getShiftHours(shift),
@@ -102,6 +112,18 @@ const App = () => {
     };
 
     const saveShift = (form) => {
+        const sameDayShift = shifts.some(
+            (shift) =>
+                shift.id !== form.id &&
+                shift.employeeId === form.employeeId &&
+                shift.date === form.date,
+        );
+
+        if (sameDayShift) {
+            setToast("Each team member can have one shift per day.");
+            return;
+        }
+
         const conflict = shifts.some(
             (shift) =>
                 shift.id !== form.id &&

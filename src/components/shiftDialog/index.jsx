@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiClock, FiTrash2, FiX } from "react-icons/fi";
+import Swal from "sweetalert2";
 import styles from "./styles.module.css";
 
 const getInitialForm = (shift) => ({
@@ -16,11 +17,13 @@ const getInitialForm = (shift) => ({
 const ShiftDialog = ({ employees, shift, onClose, onSave, onDelete }) => {
     const [form, setForm] = useState(() => getInitialForm(shift));
     const [error, setError] = useState("");
+    const isConfirmingRemoval = useRef(false);
     const editing = Boolean(shift?.id);
+    const employeeName = employees.find((employee) => employee.id === form.employeeId)?.name || "This team member";
 
     useEffect(() => {
         const closeOnEscape = (event) => {
-            if (event.key === "Escape") onClose();
+            if (event.key === "Escape" && !isConfirmingRemoval.current) onClose();
         };
 
         document.addEventListener("keydown", closeOnEscape);
@@ -59,6 +62,42 @@ const ShiftDialog = ({ employees, shift, onClose, onSave, onDelete }) => {
         }
 
         onSave(form);
+    };
+
+    const confirmShiftRemoval = async () => {
+        isConfirmingRemoval.current = true;
+        const formattedDate = new Date(`${form.date}T12:00:00`).toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+        });
+        try {
+            const result = await Swal.fire({
+                title: "Remove this shift?",
+                text: `${employeeName}'s shift on ${formattedDate} will be removed from the roster. This action cannot be undone.`,
+                icon: "warning",
+                iconColor: "var(--color-danger)",
+                showCancelButton: true,
+                confirmButtonText: "Remove shift",
+                cancelButtonText: "Keep shift",
+                reverseButtons: true,
+                focusCancel: true,
+                customClass: {
+                    popup: styles["remove-confirmation-popup"],
+                    icon: styles["remove-confirmation-icon"],
+                    title: styles["remove-confirmation-title"],
+                    htmlContainer: styles["remove-confirmation-message"],
+                    actions: styles["remove-confirmation-actions"],
+                    cancelButton: styles["remove-confirmation-cancel"],
+                    confirmButton: styles["remove-confirmation-submit"],
+                },
+                buttonsStyling: false,
+            });
+
+            if (result.isConfirmed) onDelete(shift.id);
+        } finally {
+            isConfirmingRemoval.current = false;
+        }
     };
 
     return (
@@ -179,7 +218,7 @@ const ShiftDialog = ({ employees, shift, onClose, onSave, onDelete }) => {
                             <button
                                 className={styles["delete-button"]}
                                 type="button"
-                                onClick={() => onDelete(shift.id)}
+                                onClick={confirmShiftRemoval}
                             >
                                 <FiTrash2 aria-hidden="true" />
                                 Remove shift

@@ -252,3 +252,97 @@
         }
     }
 }
+
+.remove-confirmation-popup {
+    width: min(100% - 32px, 440px);
+    padding: 25px;
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: 0 28px 84px rgba(12, 30, 44, 0.28);
+    font-family: "Aptos", "Segoe UI", sans-serif;
+
+    .remove-confirmation-icon {
+        width: 46px;
+        height: 46px;
+        margin: 0 auto 16px;
+        border-color: #efc9bf;
+        font-size: 11px;
+    }
+
+    .remove-confirmation-title {
+        margin: 0;
+        padding: 0;
+        color: var(--color-navy);
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.4px;
+    }
+
+    .remove-confirmation-message {
+        margin: 10px 0 0;
+        padding: 0;
+        color: var(--color-ink-soft);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .remove-confirmation-actions {
+        gap: 9px;
+        margin-top: 23px;
+    }
+
+    .remove-confirmation-cancel,
+    .remove-confirmation-submit {
+        min-height: 42px;
+        padding: 0 15px;
+        border: 1px solid var(--color-line-strong);
+        border-radius: 7px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease;
+
+        &:focus-visible {
+            outline: 3px solid rgba(233, 118, 83, 0.3);
+            outline-offset: 2px;
+        }
+
+        &:hover {
+            border-color: var(--color-navy);
+            box-shadow: 0 3px 9px rgba(24, 52, 73, 0.1);
+        }
+    }
+
+    .remove-confirmation-cancel {
+        background: var(--color-surface);
+        color: var(--color-ink-soft);
+    }
+
+    .remove-confirmation-submit {
+        border-color: var(--color-danger);
+        background: var(--color-danger);
+        color: white;
+
+        &:hover {
+            border-color: #8f3b2e;
+            box-shadow: 0 3px 10px rgba(180, 77, 60, 0.2);
+        }
+    }
+
+    @media (max-width: 420px) {
+        padding: 21px;
+
+        .remove-confirmation-actions {
+            flex-direction: column-reverse;
+        }
+
+        .remove-confirmation-cancel,
+        .remove-confirmation-submit {
+            width: 100%;
+        }
+    }
+}

@@ -1,3 +1,5 @@
+![Shiftline Employee Shift Scheduler](./screenshot.png)
+
 # Shiftline - Employee Shift Scheduler
 
 Shiftline is a weekly workforce planner for assigning employee shifts and keeping store coverage visible. Browse a roster by week, adjust shift hours, review team workloads, and find open coverage at a glance.

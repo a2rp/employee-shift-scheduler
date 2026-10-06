@@ -19,12 +19,10 @@
         color: var(--color-navy);
         font-size: 12px;
         font-weight: 700;
-        visibility: hidden;
         opacity: 0;
         pointer-events: none;
 
         &:focus {
-            visibility: visible;
             opacity: 1;
             pointer-events: auto;
         }
